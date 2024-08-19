@@ -13,14 +13,13 @@ static void _remove_node_(struct slinkedlist_node *before, struct slinkedlist_no
 
     list->size--;
 
-    if (list->destroy_value)
-        list->destroy_value(actual->value);
-
-    // If not helper destroy_value function is present, then
-    // check if the user wants to receive the value in the node
-    // that will be destroyed. If so, then pass it.
-    if (out_value && !list->destroy_value)
+    // Priorize 'out_value' to 'destroy_value' function.
+    // If 'out_value' is not NULL, then 'destroy_value' will not be used
+    // and instead, the value will be passed to 'out_value'.
+    if (out_value)
         *out_value = actual->value;
+    else if (list->destroy_value)
+        list->destroy_value(actual->value);
 
     memset(actual, 0, sizeof(struct slinkedlist_node));
     free(actual);
